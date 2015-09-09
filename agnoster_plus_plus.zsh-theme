@@ -90,12 +90,7 @@ else
    prompt_segment red black "${CHARGE}"
 fi
 }
-# Context: user@hostname (who am I and where am I)
-prompt_context() {
-  if [[ "$USER" != "$DEFAULT_USER" || -n "$SSH_CLIENT" ]]; then
-    prompt_segment black default "%(!.%{%F{yellow}%}.)$USER@%m"
-  fi
-}
+
 # Context: user@hostname (who am I and where am I)
 prompt_context() {
   local user=`whoami`
@@ -132,7 +127,11 @@ prompt_git() {
 
 # Dir: current working directory
 prompt_dir() {
-  prompt_segment blue $PRIMARY_FG ' %~ '
+	if [[ -d $(git rev-parse --show-toplevel 2>/dev/null) ]]; then
+      prompt_segment blue $PRIMARY_FG ' $(basename $(git rev-parse --show-toplevel)) '
+	elif
+      prompt_segment blue $PRIMARY_FG ' %~ '
+	fi
 }
 
 # Status:
