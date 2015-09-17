@@ -133,7 +133,6 @@ prompt_git() {
 prompt_dir() {
 	if [[ -d $(git rev-parse --show-toplevel 2>/dev/null) ]]; then
     prompt_segment  $PRIMARY_FG " $(basename $(git rev-parse --show-toplevel))/$(git rev-parse --show-prefix) "
-		echo -ne "\e]1;$(basename $(git rev-parse --show-toplevel))\a"
 	else
     prompt_segment blue $PRIMARY_FG ' %~ '
 	fi
