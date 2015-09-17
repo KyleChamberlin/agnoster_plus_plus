@@ -69,28 +69,32 @@ prompt_end() {
 
 battery_status()
 {
-REM_CAP1=`cat /sys/class/power_supply/BAT0/energy_now`
-REM_CAP2=`cat /sys/class/power_supply/BAT1/energy_now`
-FULL_CAP1=`cat /sys/class/power_supply/BAT0/energy_full`
-FULL_CAP2=`cat /sys/class/power_supply/BAT1/energy_full`
-((CHARGE = ( ( REM_CAP1 + REM_CAP2 ) * 100 / ( FULL_CAP1 + FULL_CAP2 ) ) ))
+	CHARGE=0
 
-COLOUR="%F{red}"
-if [ "$CHARGE" -gt "99" ]
-then
-   CHARGE=100
-fi
-if [ "$CHARGE" -gt "30" ]
-then
-   prompt_segment green black "${CHARGE}"
-elif [ "$CHARGE" -gt "15" ]
-then
-   prompt_segment yellow black "${CHARGE}"
-else
-   prompt_segment red black "${CHARGE}"
-fi
+  if [[ "$CHARGE" -gt "99" ]]; then
+    CHARGE=10
+  fi
+
+  if [[ "$CHARGE" -gt "30" ]]; then
+    prompt_segment green black "${CHARGE}"
+  elif [[ "$CHARGE" -gt "15" ]]; then
+    prompt_segment yellow black "${CHARGE}"
+  else
+    prompt_segment red black "${CHARGE}"
+  fi
+}
+  
+lenovo_t440s_battery() {
+  REM_CAP1=`cat /sys/class/power_supply/BAT0/energy_now`
+  REM_CAP2=`cat /sys/class/power_supply/BAT1/energy_now`
+  FULL_CAP1=`cat /sys/class/power_supply/BAT0/energy_full`
+  FULL_CAP2=`cat /sys/class/power_supply/BAT1/energy_full`
+  CHARGE=((REM_CAP1 + REM_CAP2) * 100 / (FULL_CAP1 + FULL_CAP2))
 }
 
+macbook_pro_battery() {
+
+}
 # Context: user@hostname (who am I and where am I)
 prompt_context() {
   local user=`whoami`
@@ -128,7 +132,8 @@ prompt_git() {
 # Dir: current working directory
 prompt_dir() {
 	if [[ -d $(git rev-parse --show-toplevel 2>/dev/null) ]]; then
-    prompt_segment green $PRIMARY_FG " $(basename $(git rev-parse --show-toplevel))/$(git rev-parse --show-prefix) "
+    prompt_segment  $PRIMARY_FG " $(basename $(git rev-parse --show-toplevel))/$(git rev-parse --show-prefix) "
+		echo -ne "\e]1;$(basename $(git rev-parse --show-toplevel))\a"
 	else
     prompt_segment blue $PRIMARY_FG ' %~ '
 	fi
